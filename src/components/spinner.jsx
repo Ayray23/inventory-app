@@ -1,6 +1,7 @@
 import React from "react";
 import "./spinner.css";
 
+
 const Spinner = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-white">

@@ -38,6 +38,17 @@ const AddProduct = () => {
   return (
     <>
       <Navbar />
+      <div className=" bg-gray-50 px-4 pt-20 pb-2 md:px-10">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-blue-700">📦 Add Products</h1>
+        <Link
+          to="/dashboard"
+          className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-xl shadow"
+        >
+          Back to Dashboard
+        </Link>
+      </div>
+      </div>
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
           <h2 className="text-2xl font-bold mb-4 text-center text-gray-700">Add Product</h2>
@@ -46,7 +57,7 @@ const AddProduct = () => {
           <input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} className="w-full mb-3 p-3 border border-gray-300 rounded-md" />
           <input type="number" placeholder="Discount (%)" value={discount} onChange={(e) => setDiscount(e.target.value)} className="w-full mb-3 p-3 border border-gray-300 rounded-md" />
           <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full mb-4 p-3 border border-gray-300 rounded-md">
-            <option value="Hot Drink">Hot Drink</option>
+            <option value="Hard Drink">Hard Drink</option>
             <option value="Soft Drink">Soft Drink</option>
           </select>
           <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">Add Product</button>
