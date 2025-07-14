@@ -63,7 +63,11 @@ const totalAmount = filteredSales.reduce((sum, sale) => sum + Number(sale.amount
 
 const paginatedSales = filteredSales.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage); const totalPages = Math.ceil(filteredSales.length / itemsPerPage);
 
-return ( <> <Navbar /> <div className="pt-20 px-4 sm:px-6"> <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6"> <h1 className="text-2xl font-bold text-blue-700">📦 View Products</h1> <Link to="/dashboard" className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-xl shadow"> Back to Dashboard </Link> </div>
+return ( <> <Navbar />
+ <div className="pt-20 px-4 sm:px-6">
+   <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+     <h1 className="text-2xl font-bold text-blue-700">📦 View Sales Record</h1>
+      <Link to="/dashboard" className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-xl shadow"> Back to Dashboard </Link> </div>
 
 <div className="bg-gray-100 rounded-lg p-4 md:p-6 shadow">
       <div className="flex flex-col sm:flex-row flex-wrap justify-between items-center gap-3 mb-4">

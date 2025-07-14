@@ -120,7 +120,7 @@ const Products = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="pt-8 min-h-screen bg-gray-100">
       <Navbar />
 
       {errorMessage && (
