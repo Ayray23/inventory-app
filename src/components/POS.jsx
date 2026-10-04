@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { collection, getDocs, query, where, runTransaction, serverTimestamp, addDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, runTransaction, serverTimestamp, doc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import Navbar from "./navbar";
 import BarcodeScanner from "./BarcodeScanner";
@@ -79,16 +79,19 @@ const POS = () => {
     try {
       const receiptNo = `POS-${new Date().toISOString().slice(0,10).replaceAll("-","")}-${Date.now().toString().slice(-6)}`;
       await runTransaction(db, async (tx) => {
-        const refs = cart.map((item) => ({ item, ref: (await import("firebase/firestore")).doc(db, "products", item.id) }));
-        for (const { item, ref } of refs) {
-          const snap = await tx.get(ref);
+        const refs = cart.map((item) => ({ item, ref: doc(db, "products", item.id) }));
+        const snapshots = await Promise.all(refs.map(({ ref }) => tx.get(ref)));
+        snapshots.forEach((snap, index) => {
+          const item = refs[index].item;
           if (!snap.exists()) throw new Error(`${item.name} no longer exists`);
-          const current = snap.data();
-          const stock = Number(current.quantity || 0);
+          const stock = Number(snap.data().quantity || 0);
           if (stock < item.qty) throw new Error(`Insufficient stock for ${item.name}`);
-          tx.update(ref, { quantity: stock - item.qty });
-        }
-        const saleRef = (await import("firebase/firestore")).doc(collection(db, "sales"));
+        });
+        snapshots.forEach((snap, index) => {
+          const item = refs[index].item;
+          tx.update(refs[index].ref, { quantity: Number(snap.data().quantity || 0) - item.qty });
+        });
+        const saleRef = doc(collection(db, "sales"));
         tx.set(saleRef, {
           receiptNo,
           items: cart.map((item) => ({ productId: item.id, name: item.name, barcode: item.barcode || "", sku: item.sku || "", quantity: item.qty, price: Number(item.price || 0), total: Number(item.price || 0) * item.qty })),
