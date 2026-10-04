@@ -4,10 +4,15 @@ import { Camera, CameraOff, ScanLine } from "lucide-react";
 
 const BarcodeScanner = ({ onScan, onClose }) => {
   const scannerRef = useRef(null);
+  const onScanRef = useRef(onScan);
   const mountedRef = useRef(true);
   const handledRef = useRef(false);
   const [error, setError] = useState("");
   const [starting, setStarting] = useState(true);
+
+  useEffect(() => {
+    onScanRef.current = onScan;
+  }, [onScan]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -26,6 +31,18 @@ const BarcodeScanner = ({ onScan, onClose }) => {
       }
     };
 
+    const clearScanner = async () => {
+      try {
+        await stopScanner();
+      } finally {
+        try {
+          scanner.clear();
+        } catch (err) {
+          console.warn("Scanner clear:", err);
+        }
+      }
+    };
+
     const startScanner = async () => {
       try {
         await scanner.start(
@@ -37,26 +54,28 @@ const BarcodeScanner = ({ onScan, onClose }) => {
           },
           async (decodedText) => {
             if (!mountedRef.current || handledRef.current) return;
-            handledRef.current = true;
 
             const value = String(decodedText || "").trim();
-            if (!value) {
-              handledRef.current = false;
-              return;
-            }
+            if (!value) return;
 
+            handledRef.current = true;
             await stopScanner();
 
             if (mountedRef.current) {
-              onScan(value);
+              onScanRef.current?.(value);
             }
           },
           () => {}
         );
 
-        if (mountedRef.current) setStarting(false);
+        if (mountedRef.current) {
+          setStarting(false);
+        } else {
+          await clearScanner();
+        }
       } catch (err) {
         console.error("Barcode scanner error:", err);
+
         if (mountedRef.current) {
           setStarting(false);
           setError(
@@ -70,11 +89,10 @@ const BarcodeScanner = ({ onScan, onClose }) => {
 
     return () => {
       mountedRef.current = false;
-      stopScanner().finally(() => {
-        scanner.clear().catch(() => {});
-      });
+      clearScanner();
+      scannerRef.current = null;
     };
-  }, [onScan]);
+  }, []);
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4">
@@ -89,18 +107,29 @@ const BarcodeScanner = ({ onScan, onClose }) => {
               Point the camera at the product barcode.
             </p>
           </div>
-          <button onClick={onClose} className="rounded-lg p-2 text-gray-500 hover:bg-gray-100" aria-label="Close scanner">
+          <button
+            onClick={onClose}
+            className="rounded-lg p-2 text-gray-500 hover:bg-gray-100"
+            aria-label="Close scanner"
+          >
             <CameraOff size={20} />
           </button>
         </div>
 
         <div className="p-5">
-          <div id="inventory-barcode-reader" className="min-h-[260px] overflow-hidden rounded-xl border-2 border-dashed border-blue-200 bg-gray-950" />
+          <div
+            id="inventory-barcode-reader"
+            className="min-h-[260px] overflow-hidden rounded-xl border-2 border-dashed border-blue-200 bg-gray-950"
+          />
 
           {error ? (
-            <div className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
+            <div className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+              {error}
+            </div>
           ) : starting ? (
-            <p className="mt-4 text-center text-sm text-gray-500">Starting camera...</p>
+            <p className="mt-4 text-center text-sm text-gray-500">
+              Starting camera...
+            </p>
           ) : (
             <p className="mt-4 flex items-center justify-center gap-2 text-center text-sm text-gray-500">
               <Camera size={16} />
@@ -110,8 +139,13 @@ const BarcodeScanner = ({ onScan, onClose }) => {
         </div>
 
         <div className="flex justify-between gap-3 border-t bg-gray-50 px-5 py-4">
-          <span className="self-center text-xs text-gray-400">Camera scanning is ready.</span>
-          <button onClick={onClose} className="rounded-lg bg-gray-700 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
+          <span className="self-center text-xs text-gray-400">
+            Camera scanning is ready.
+          </span>
+          <button
+            onClick={onClose}
+            className="rounded-lg bg-gray-700 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+          >
             Cancel
           </button>
         </div>
