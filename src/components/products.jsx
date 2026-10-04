@@ -104,6 +104,29 @@ const Products = () => {
     }
   };
 
+  const generateMissingBarcodes = async () => {
+    const missing = products.filter((product) => !product.barcode);
+
+    if (!missing.length) {
+      toast.success("All products already have barcodes");
+      return;
+    }
+
+    try {
+      await Promise.all(
+        missing.map((product) =>
+          updateDoc(doc(db, "products", product.id), {
+            barcode: createBarcode(product.id),
+          })
+        )
+      );
+      toast.success(`🏷️ Generated barcodes for ${missing.length} product${missing.length === 1 ? "" : "s"}`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not generate all barcodes");
+    }
+  };
+
   const generateBarcode = async (product) => {
     try {
       const barcode = product.barcode || createBarcode(product.id);
@@ -227,13 +250,22 @@ const Products = () => {
             <option value="soft drink">Soft Drink</option>
           </select>
 
-          <button
-            onClick={() => setShowScanner(true)}
-            className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2 font-semibold text-white shadow hover:bg-blue-700"
-          >
-            <ScanLine size={19} />
-            Scan & Add Stock
-          </button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <button
+              onClick={generateMissingBarcodes}
+              className="flex items-center justify-center gap-2 rounded-lg border border-purple-200 bg-white px-4 py-2 font-semibold text-purple-700 shadow-sm hover:bg-purple-50"
+            >
+              <BarcodeIcon size={19} />
+              Generate Missing Barcodes
+            </button>
+            <button
+              onClick={() => setShowScanner(true)}
+              className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2 font-semibold text-white shadow hover:bg-blue-700"
+            >
+              <ScanLine size={19} />
+              Scan & Add Stock
+            </button>
+          </div>
         </div>
 
         <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 p-4">
