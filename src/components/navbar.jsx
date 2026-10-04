@@ -58,7 +58,7 @@ const Navbar = () => {
 
         {/* Desktop Menu */}
         <div className="hidden sm:flex gap-6 items-center">
-          <Link to="/add" className={getLinkClass("/add")}>Add Product</Link>
+          <Link to="/pos" className={getLinkClass("/pos")}>POS</Link>\n          <Link to="/add" className={getLinkClass("/add")}>Add Product</Link>
           <Link to="/products" className={getLinkClass("/products")}>View Products</Link>
           <Link to="/sales-history" className={getLinkClass("/sales-history")}>View Sales</Link>
           <Link to="/dashboard" className="bg-yellow-300 text-blue-800 font-bold px-3 py-1 rounded hover:bg-yellow-400 transition">
@@ -71,7 +71,7 @@ const Navbar = () => {
       {/* Mobile Dropdown Menu */}
       {menuOpen && (
         <div className="mt-4 flex flex-col gap-4 sm:hidden">
-          <Link to="/add" onClick={() => setMenuOpen(false)} className={getLinkClass("/add")}>Add Product</Link>
+          <Link to="/pos" onClick={() => setMenuOpen(false)} className={getLinkClass("/pos")}>POS</Link>\n          <Link to="/add" onClick={() => setMenuOpen(false)} className={getLinkClass("/add")}>Add Product</Link>
           <Link to="/products" onClick={() => setMenuOpen(false)} className={getLinkClass("/products")}>View Products</Link>
           <Link to="/sales-history" onClick={() => setMenuOpen(false)} className={getLinkClass("/sales-history")}>View Sales</Link>
           <Link
