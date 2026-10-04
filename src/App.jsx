@@ -14,6 +14,7 @@ import Spinner from "./components/spinner";
 import SalesHistory from "./components/salesHistory";
 import Dashboard from "./components/dashboard";
 import SalesChart from "./components/salesChart";
+import POS from "./components/POS";
 import { Toaster } from "react-hot-toast";
 
 
