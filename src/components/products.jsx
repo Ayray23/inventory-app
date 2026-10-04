@@ -6,6 +6,7 @@ import {
   deleteDoc,
   doc,
   addDoc,
+  runTransaction,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import Navbar from "./navbar";
@@ -30,7 +31,8 @@ const Products = () => {
   const [showScanner, setShowScanner] = useState(false);
   const [scannedProduct, setScannedProduct] = useState(null);
   const [restockQuantity, setRestockQuantity] = useState("1");
-  const [barcodeProduct, setBarcodeProduct] = useState(null);\n  const [manualBarcode, setManualBarcode] = useState("");
+  const [barcodeProduct, setBarcodeProduct] = useState(null);
+  const [manualBarcode, setManualBarcode] = useState("");
 
   const location = useLocation();
 
@@ -317,9 +319,27 @@ const Products = () => {
         <div className="mb-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <h2 className="font-bold text-slate-900">Receive stock by barcode</h2>
           <p className="mt-1 text-sm text-slate-500">Use a USB/Bluetooth scanner or type the manufacturer barcode manually.</p>
-          <form onSubmit={(e) => { e.preventDefault(); handleScan(manualBarcode.trim()); setManualBarcode(""); }} className="mt-3 flex flex-col gap-2 sm:flex-row">
-            <input value={manualBarcode} onChange={(e) => setManualBarcode(e.target.value)} placeholder="Scan/type product barcode..." className="flex-1 rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-500" />
-            <button type="submit" disabled={!manualBarcode.trim()} className="rounded-lg bg-slate-900 px-5 py-3 font-semibold text-white disabled:opacity-50">Find & Receive</button>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleScan(manualBarcode.trim());
+              setManualBarcode("");
+            }}
+            className="mt-3 flex flex-col gap-2 sm:flex-row"
+          >
+            <input
+              value={manualBarcode}
+              onChange={(e) => setManualBarcode(e.target.value)}
+              placeholder="Scan/type product barcode..."
+              className="flex-1 rounded-lg border border-slate-300 p-3 outline-none focus:border-blue-500"
+            />
+            <button
+              type="submit"
+              disabled={!manualBarcode.trim()}
+              className="rounded-lg bg-slate-900 px-5 py-3 font-semibold text-white disabled:opacity-50"
+            >
+              Find & Receive
+            </button>
           </form>
         </div>
 
