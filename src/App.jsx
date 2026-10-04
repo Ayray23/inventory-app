@@ -103,6 +103,11 @@ const App = () => {
         />
 
         <Route
+          path="/pos"
+          element={user ? <POS /> : <Navigate to="/login" />}
+        />
+
+        <Route
           path="/sales-history"
           element={user ? <SalesHistory /> : <Navigate to="/login" />}
         />
