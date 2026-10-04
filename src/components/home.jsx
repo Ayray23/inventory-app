@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { db } from "../firebase";
-import { collection, addDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "./navbar";
 import Barcode from "./Barcode";
@@ -9,6 +9,9 @@ const createBarcode = (id) => `INV-${id.toUpperCase()}`;
 
 const AddProduct = () => {
   const [name, setName] = useState("");
+  const [sku, setSku] = useState("");
+  const [barcode, setBarcode] = useState("");
+  const [reorderLevel, setReorderLevel] = useState("5");
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [discount, setDiscount] = useState("");
@@ -28,20 +31,27 @@ const AddProduct = () => {
     try {
       const productRef = await addDoc(collection(db, "products"), {
         name: name.trim(),
+        sku: sku.trim(),
+        barcode: barcode.trim(),
         quantity: Number(quantity),
         price: Number(price),
         discount: Number(discount || 0),
         category,
-        barcode: "",
+        reorderLevel: Number(reorderLevel || 5),
         createdAt: serverTimestamp(),
       });
 
-      const barcode = createBarcode(productRef.id);
-      await updateDoc(productRef, { barcode });
-
-      setCreatedBarcode(barcode);
+      const generatedBarcode = barcode.trim() || createBarcode(productRef.id);
+      if (generatedBarcode !== barcode.trim()) {
+        const { updateDoc } = await import("firebase/firestore");
+        await updateDoc(productRef, { barcode: generatedBarcode });
+      }
+      setCreatedBarcode(generatedBarcode);
       setCreatedProductName(name.trim());
       setName("");
+      setSku("");
+      setBarcode("");
+      setReorderLevel("5");
       setQuantity("");
       setPrice("");
       setDiscount("");
@@ -87,6 +97,22 @@ const AddProduct = () => {
             />
 
             <input
+              type="text"
+              placeholder="SKU / Product Code (optional)"
+              value={sku}
+              onChange={(e) => setSku(e.target.value)}
+              className="mb-3 w-full rounded-md border border-gray-300 p-3"
+            />
+
+            <input
+              type="text"
+              placeholder="Barcode (scan/type, optional)"
+              value={barcode}
+              onChange={(e) => setBarcode(e.target.value)}
+              className="mb-3 w-full rounded-md border border-gray-300 p-3"
+            />
+
+            <input
               type="number"
               min="0"
               placeholder="Quantity *"
@@ -101,6 +127,15 @@ const AddProduct = () => {
               placeholder="Price *"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
+              className="mb-3 w-full rounded-md border border-gray-300 p-3"
+            />
+
+            <input
+              type="number"
+              min="0"
+              placeholder="Reorder Level (e.g. 5)"
+              value={reorderLevel}
+              onChange={(e) => setReorderLevel(e.target.value)}
               className="mb-3 w-full rounded-md border border-gray-300 p-3"
             />
 
