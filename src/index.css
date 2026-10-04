@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+@media print {
+  body * { visibility: hidden !important; }
+  #receipt-print, #receipt-print * { visibility: visible !important; }
+  #receipt-print { position: absolute; left: 0; top: 0; width: 100%; }
+}
