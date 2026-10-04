@@ -14,6 +14,7 @@ const AddProduct = () => {
   const [discount, setDiscount] = useState("");
   const [category, setCategory] = useState("Soft Drink");
   const [createdBarcode, setCreatedBarcode] = useState("");
+  const [createdProductName, setCreatedProductName] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -39,6 +40,7 @@ const AddProduct = () => {
       await updateDoc(productRef, { barcode });
 
       setCreatedBarcode(barcode);
+      setCreatedProductName(name.trim());
       setName("");
       setQuantity("");
       setPrice("");
@@ -144,7 +146,7 @@ const AddProduct = () => {
             </p>
 
             {createdBarcode ? (
-              <Barcode value={createdBarcode} productName={name || "New Product"} />
+              <Barcode value={createdBarcode} productName={createdProductName || "New Product"} />
             ) : (
               <div className="flex min-h-[180px] items-center justify-center rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 text-center text-sm text-gray-400">
                 Your generated barcode will appear here.
